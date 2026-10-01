@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La gran aventura matemática</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"Trebuchet MS",Arial,sans-serif;background:linear-gradient(135deg,#fff4c7,#dff7ff);color:#333;min-height:100vh}
+.container{max-width:1050px;margin:auto;padding:20px}
+.screen{background:#fff;border-radius:28px;padding:28px;box-shadow:0 10px 30px rgba(0,0,0,.12);text-align:center}
+h1{font-size:40px;color:#ff704f;margin:8px 0}h2{font-size:30px;color:#4d8cff}
+p{font-size:20px;line-height:1.45}
+.character{font-size:76px}.hidden{display:none}
+button{border:0;border-radius:18px;padding:14px 24px;margin:8px;font-size:19px;font-weight:bold;cursor:pointer;background:#ffcb45;color:#553900;box-shadow:0 5px 0 #dda51c}
+button:hover{transform:translateY(-2px)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.score{font-size:20px;font-weight:bold;color:#4d8cff}
+.progress{height:18px;background:#eee;border-radius:20px;overflow:hidden;margin:15px 0}.bar{height:100%;background:#65c466;width:0%;transition:.3s}
+.objects{display:flex;justify-content:center;gap:15px;flex-wrap:wrap;margin:22px 0}
+.obj{width:92px;height:92px;border-radius:23px;display:flex;align-items:center;justify-content:center;font-size:45px;cursor:pointer;border:5px solid transparent;transition:.2s}
+.obj:hover{transform:scale(1.08)}
+.red{background:#ffd6d6}.blue{background:#d7e7ff}.yellow{background:#fff0a8}.green{background:#d7f5d7}
+.small{width:68px;height:68px;font-size:32px}.large{width:125px;height:125px;font-size:60px}
+.boxes{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin:18px}
+.box{min-width:190px;min-height:130px;border:5px dashed #bbb;border-radius:25px;padding:15px;background:#fafafa;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;font-size:19px}
+.redBox{border-color:#e65b5b;background:#fff1f1}.blueBox{border-color:#5b8fe6;background:#f1f6ff}.yellowBox{border-color:#e6b800;background:#fffbea}
+.sizeBox{border-color:#65a765;background:#f4fff4}
+.numChoices{display:flex;justify-content:center;gap:15px;flex-wrap:wrap;margin:22px}.num{width:70px;height:70px;border-radius:50%;background:#dff0ff;display:flex;align-items:center;justify-content:center;font-size:29px;font-weight:bold;cursor:pointer;border:4px solid #8bbcff}
+.feedback{font-size:22px;min-height:38px;font-weight:bold}.stars{font-size:40px;letter-spacing:4px}
+.card{display:inline-flex;align-items:center;justify-content:center;flex-direction:column;width:150px;height:150px;border:4px solid #ddd;border-radius:25px;margin:8px;cursor:pointer;background:#fff}
+.card span{font-size:55px}.card b{font-size:18px}
+.option{padding:15px 22px;border-radius:18px;background:#eef7ff;border:3px solid #9cc9ff;font-size:21px;cursor:pointer;margin:7px}
+.option:hover{transform:scale(1.03)}
+</style>
+</head>
+<body>
+<div class="container">
+<section id="start" class="screen">
+<div class="character">🧒🔎🌈</div>
+<h1>La gran aventura matemática</h1>
+<p>¡Ayuda a nuestros exploradores a superar 6 retos!</p>
+<p><b>Observa, clasifica, compara y cuenta.</b></p>
+<button onclick="startGame()">🚀 ¡Comenzar aventura!</button>
+</section>
+
+<section id="game" class="screen hidden">
+<div class="top"><div class="score">⭐ Estrellas: <span id="score">0</span> / 6</div><div>🎯 Reto <span id="reto">1</span> de 6</div></div>
+<div class="progress"><div class="bar" id="bar"></div></div>
+
+<!-- RETO 1 -->
+<div id="r1" class="challenge">
+<h2>🎨 Reto 1: La caja de colores</h2>
+<p>Selecciona un objeto y luego toca la caja de su mismo color.</p>
+<div id="colorObjects" class="objects"></div>
+<div class="boxes">
+<div class="box redBox" onclick="colorBox('rojo')">🔴<b>ROJO</b></div>
+<div class="box blueBox" onclick="colorBox('azul')">🔵<b>AZUL</b></div>
+<div class="box yellowBox" onclick="colorBox('amarillo')">🟡<b>AMARILLO</b></div>
+</div><div id="f1" class="feedback"></div>
+</div>
+
+<!-- RETO 2 -->
+<div id="r2" class="challenge hidden">
+<h2>📏 Reto 2: Gigantes y pequeñitos</h2>
+<p>Selecciona cada objeto y clasifícalo como <b>grande</b> o <b>pequeño</b>.</p>
+<div id="sizeObjects" class="objects"></div>
+<div class="boxes"><div class="box sizeBox" onclick="sizeBox('grande')">🐘<b>GRANDES</b></div><div class="box sizeBox" onclick="sizeBox('pequeno')">🐭<b>PEQUEÑOS</b></div></div>
+<div id="f2" class="feedback"></div>
+</div>
+
+<!-- RETO 3 -->
+<div id="r3" class="challenge hidden">
+<h2>🔢 Reto 3: Cuenta y descubre</h2>
+<p>Cuenta las manzanas y escoge el número correcto.</p>
+<div id="countObjects" class="objects"></div><div id="numbers" class="numChoices"></div><div id="f3" class="feedback"></div>
+</div>
+
+<!-- RETO 4 -->
+<div id="r4" class="challenge hidden">
+<h2>🧺 Reto 4: Encuentra los iguales</h2>
+<p>Busca las <b>3 frutas</b> que tienen el mismo color y selecciónalas.</p>
+<div id="pairs" class="objects"></div><div id="f4" class="feedback"></div>
+</div>
+
+<!-- RETO 5 -->
+<div id="r5" class="challenge hidden">
+<h2>🔍 Reto 5: Detective matemático</h2>
+<p id="detectiveQuestion"></p>
+<div id="detectiveOptions"></div><div id="f5" class="feedback"></div>
+</div>
+
+<!-- RETO 6 -->
+<div id="r6" class="challenge hidden">
+<h2>🏆 Reto 6: La gran misión</h2>
+<p>Observa el grupo. ¿Cuántas <b>frutas rojas grandes</b> hay?</p>
+<div id="finalObjects" class="objects"></div><div id="finalNumbers" class="numChoices"></div><div id="f6" class="feedback"></div>
+</div>
+
+<div id="finish" class="hidden">
+<div class="character">🏆🧒🌟</div><h2>¡Misión cumplida!</h2><div class="stars">⭐⭐⭐⭐⭐⭐</div>
+<p>¡Excelente explorador! Clasificaste por color y tamaño, comparaste y contaste objetos.</p>
+<p><b>¡Tu pensamiento matemático está creciendo!</b></p>
+<button onclick="location.reload()">🔄 Jugar otra vez</button>
+</div>
+</section>
+</div>
+
+<script>
+let score=0,selected=null,done=0, pairSelected=[],finalCorrect=2;
+
+const colors=[
+{e:"🍎",c:"rojo",cl:"red"},{e:"🍓",c:"rojo",cl:"red"},
+{e:"🫐",c:"azul",cl:"blue"},{e:"🐟",c:"azul",cl:"blue"},
+{e:"🍋",c:"amarillo",cl:"yellow"},{e:"🌻",c:"amarillo",cl:"yellow"}];
+
+const sizes=[
+{e:"🐘",s:"grande"},{e:"🦒",s:"grande"},{e:"🍉",s:"grande"},
+{e:"🐭",s:"pequeno"},{e:"🐝",s:"pequeno"},{e:"🍒",s:"pequeno"}];
+
+function startGame(){document.getElementById("start").classList.add("hidden");document.getElementById("game").classList.remove("hidden");buildColors();update();}
+function update(){document.getElementById("score").textContent=score;document.getElementById("bar").style.width=(score/6*100)+"%";}
+function msg(id,t){document.getElementById(id).textContent=t;}
+function star(next){
+score++;update();if(next)setTimeout(()=>go(next),650);
+}
+function go(n){
+for(let i=1;i<=6;i++)document.getElementById("r"+i).classList.add("hidden");
+document.getElementById("r"+n).classList.remove("hidden");
+document.getElementById("reto").textContent=n;
+if(n===2)buildSizes();if(n===3)buildCount();if(n===4)buildPairs();if(n===5)buildDetective();if(n===6)buildFinal();
+}
+function buildColors(){
+let a=document.getElementById("colorObjects");
+colors.forEach((o,i)=>{let d=document.createElement("div");d.className="obj "+o.cl;d.textContent=o.e;d.onclick=()=>{selected=o;d.style.borderColor="#333"};a.appendChild(d)});
+}
+function colorBox(c){
+if(!selected){msg("f1","👆 Primero selecciona un objeto.");return}
+if(selected.c===c){done++;msg("f1","🎉 ¡Correcto!");selected=null;if(done===6)star(2)}
+else msg("f1","💡 Observa el color e inténtalo otra vez.");
+}
+function buildSizes(){
+let a=document.getElementById("sizeObjects");sizes.forEach(o=>{let d=document.createElement("div");d.className="obj "+(o.s==="grande"?"large":"small");d.textContent=o.e;d.onclick=()=>{selected=o;d.style.borderColor="#333"};a.appendChild(d)});
+}
+function sizeBox(s){
+if(!selected){msg("f2","👆 Selecciona un objeto.");return}
+if(selected.s===s){done++;msg("f2","🎉 ¡Muy bien!");selected=null;if(done===12)star(3)}
+else msg("f2","💡 ¿Es grande o pequeño?");
+}
+function buildCount(){
+let a=document.getElementById("countObjects");for(let i=0;i<5;i++){let d=document.createElement("div");d.className="obj yellow";d.textContent="🍎";a.appendChild(d)}
+[3,4,5,6].forEach(n=>{let d=document.createElement("div");d.className="num";d.textContent=n;d.onclick=()=>{if(n===5){msg("f3","🌟 ¡Excelente! Son 5.");star(4)}else msg("f3","💭 Cuenta nuevamente.")};document.getElementById("numbers").appendChild(d)})
+}
+function buildPairs(){
+let data=[["🍏","verde"],["🍎","rojo"],["🍏","verde"],["🍌","amarillo"],["🍏","verde"],["🍓","rojo"]];
+let a=document.getElementById("pairs");data.forEach((o,i)=>{let d=document.createElement("div");d.className="card";d.innerHTML="<span>"+o[0]+"</span><b>"+o[1]+"</b>";d.onclick=()=>{if(o[1]==="verde"&&!d.dataset.sel){d.dataset.sel="1";d.style.borderColor="#55aa55";pairSelected.push(i);if(pairSelected.length===3){msg("f4","🎉 ¡Encontraste las 3 frutas verdes!");star(5)}}else if(o[1]!=="verde")msg("f4","💡 Busca las frutas del mismo color.");};a.appendChild(d)})
+}
+function buildDetective(){
+document.getElementById("detectiveQuestion").textContent="¿Qué grupo tiene MÁS objetos?";
+let opts=document.getElementById("detectiveOptions");
+[["🍎🍎","A"],["🍌🍌🍌🍌","B"],["🍓🍓🍓","C"]].forEach(o=>{let b=document.createElement("div");b.className="option";b.textContent=o[1]+": "+o[0];b.onclick=()=>{if(o[1]==="B"){msg("f5","🎉 ¡Correcto! El grupo B tiene más.");star(6)}else msg("f5","💭 Observa cuál grupo tiene más objetos.")};opts.appendChild(b)})
+}
+function buildFinal(){
+let data=[["🍎","rojo","grande"],["🍓","rojo","grande"],["🍒","rojo","pequeno"],["🍋","amarillo","grande"],["🫐","azul","grande"]];
+let a=document.getElementById("finalObjects");data.forEach(o=>{let d=document.createElement("div");d.className="card "+(o[2]==="grande"?"large":"");d.innerHTML="<span>"+o[0]+"</span><b>"+o[1]+" · "+o[2]+"</b>";a.appendChild(d)});
+[1,2,3].forEach(n=>{let d=document.createElement("div");d.className="num";d.textContent=n;d.onclick=()=>{if(n===finalCorrect){msg("f6","🏆 ¡Perfecto! Hay 2 frutas rojas grandes.");score=6;update();setTimeout(finish,700)}else msg("f6","💭 Recuerda: deben ser rojas Y grandes.")};document.getElementById("finalNumbers").appendChild(d)})
+}
+function finish(){for(let i=1;i<=6;i++)document.getElementById("r"+i).classList.add("hidden");document.getElementById("finish").classList.remove("hidden");document.getElementById("reto").textContent="6";}
+</script>
+</body>
+</html>
